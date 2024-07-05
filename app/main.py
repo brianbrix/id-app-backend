@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Depends, HTTPException
+import json
+
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from app.database import engine, SessionLocal
 from app.model import document_model
@@ -23,9 +25,23 @@ def heart():
     return {"message": "Heartbeat is okay"}
 
 
-@app.post("/documents/", response_model=document_schema.Document)
-def create_document(document: document_schema.DocumentInput, db: Session = Depends(get_db)):
-    return services.create_document(db=db, document=document)
+@app.post("/document/create", response_model=document_schema.Document)
+async def create_document(document: document_schema.DocumentInput, id_front_file: UploadFile = File(...),
+                          id_back_file: UploadFile = File(...),
+                          db: Session = Depends(get_db)):
+    id_front_file_data = await id_front_file.read()
+    id_back_file_data = await id_back_file.read()
+    document_data = json.loads(document)
+    print(document_data)
+    document_create = document_schema.DocumentInput(**document_data)
+
+    return services.create_document(document=document_create,
+                                    id_front_filename=id_front_file.filename,
+                                    id_back_filename=id_back_file.filename,
+                                    id_front_content_type=id_front_file.content_type,
+                                    id_back_content_type=id_back_file.content_type,
+                                    id_front_file_data=id_front_file_data,
+                                    id_back_file_data=id_back_file_data, db=db)
 
 
 @app.get("/documents/{document_id}", response_model=document_schema.Document)

@@ -1,3 +1,4 @@
+from fastapi import UploadFile
 from pydantic import BaseModel
 
 
@@ -8,8 +9,6 @@ class DocumentBase(BaseModel):
     location_of_issue: str
     contact: str
     location: str
-    id_front_image: str
-    id_back_image: str
 
 
 class DocumentInput(DocumentBase):
@@ -18,8 +17,10 @@ class DocumentInput(DocumentBase):
 
 class Document(DocumentBase):
     id: int
+    id_front_filename: str
+    id_back_filename: str
+    id_front_content_type: str
+    id_back_content_type: str
 
     class Config:
         orm_mode = True
-
-

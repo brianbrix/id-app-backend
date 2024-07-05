@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy import Column, Integer, String, Text, LargeBinary
 
 from app.database import Base
 
@@ -13,5 +13,5 @@ class Document(Base):
     location_of_issue = Column(String)
     contact = Column(String)
     location = Column(String)
-    id_front_image = Column(Text)
-    id_back_image = Column(Text)
+    id_front_image = Column(LargeBinary)
+    id_back_image = Column(LargeBinary)
